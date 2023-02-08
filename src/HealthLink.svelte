@@ -15,12 +15,12 @@
   }
 
   $: {
-    qrCode = href.then(r => QRCode.toDataURL(r));
+    qrCode = href.then((r) => QRCode.toDataURL(r));
   }
 
   async function copyShl() {
     let copyNoticePrev = copyNotice;
-    copyNotice = "..."
+    copyNotice = '...';
     let text = await shlClient.toLink(shl);
     navigator.clipboard.writeText(text);
     copyNotice = 'Copied!';
@@ -49,19 +49,24 @@
       Passcode: {shl.passcode || '(None)'}
     </li>
     <li>
-  <button on:click={copyShl} disabled={!!copyNotice}>
-    {#if copyNotice}
-      {copyNotice}
-    {:else}
-      Copy SHL
-    {/if}
-  </button>
-</li>
-  {#await qrCode then dataUrl}
-    <li>
-      <img alt="QR Code for SHL" src={dataUrl} />
+      <button on:click={copyShl} disabled={!!copyNotice}>
+        {#if copyNotice}
+          {copyNotice}
+        {:else}
+          Copy SHLink
+        {/if}
+      </button>
     </li>
-  {/await}
+    {#await href then href}
+      <li>
+        <a {href} target="_blank" rel="noreferrer">Open SHLink</a>
+      </li>
+    {/await}
+    {#await qrCode then dataUrl}
+      <li>
+        <img alt="QR Code for SHL" src={dataUrl} />
+      </li>
+    {/await}
   </ul>
 </div>
 

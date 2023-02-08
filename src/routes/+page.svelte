@@ -6,7 +6,6 @@
   import { SHLClient } from '../managementClient';
   import type { SHCRetrieveEvent } from '../types';
   import HealthLink from '../HealthLink.svelte';
-  import { redirect } from '@sveltejs/kit';
 
   let shlClient = new SHLClient();
   let summaryUrl = '';
@@ -36,14 +35,14 @@
 </script>
 
 <div>
-  <h1>SMART Health Links for IPS</h1>
+  <h1>SMART Health Links for International Patient Summary</h1>
 
   {#if shl}
     <HealthLink {shl} />
     <button
       on:click={() => {
         shl = undefined;
-      }}>Create new SHL</button
+      }}>Create new SHLink</button
     >
   {:else}
     <AddFile
@@ -52,10 +51,26 @@
       }}
     />
   {/if}
+  <footer>
+    This demonstration shows how to create a <a
+      href="https://docs.smarthealthit.org/smart-health-links/user-stories">SMART Health Link</a
+    >
+    for any FHIR
+    <a href="https://build.fhir.org/ig/HL7/fhir-ips/">International Patient Summary</a> document.
+    SHLinks can be shared by copy/paste, or by presenting a QR. Source at
+    <a href="https://github.com/jmandel/shlips">github.com/jmandel/shlips</a>.
+  </footer>
 </div>
 
 <style>
+  h1 {
+    font-size: 1rem;
+  }
   div {
     max-width: 800px;
+  }
+  footer {
+    margin-top: 3em;
+    font-style: italic;
   }
 </style>

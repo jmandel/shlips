@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount} from 'svelte';
   import * as jose from 'jose';
   import * as pako from 'pako';
   import issuerKeys from './issuer.private.jwks.json';
@@ -9,6 +9,11 @@
   const dispatch = createEventDispatcher<{ 'shc-retrieved': SHCRetrieveEvent }>();
   let submitting = false;
   let summaryUrl = EXAMPLE_IPS;
+  let inputUrl: HTMLInputElement;
+
+  onMount(() => {
+    inputUrl.select()
+  })
 
   let summaryUrlValidated: URL | undefined = undefined;
   $: {
@@ -68,7 +73,7 @@
 </script>
 
 <form on:submit|preventDefault={() => fetchIps(summaryUrlValidated)}>
-  <input bind:value={summaryUrl} />
+  <input type="text" bind:value={summaryUrl} bind:this={inputUrl} />
   <button disabled={!summaryUrlValidated || submitting} type="submit">
     {#if !submitting}
       Fetch IPS
