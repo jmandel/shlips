@@ -1,14 +1,15 @@
 import { randomStringWithEntropy, base64url } from './util';
 import { API_BASE, VIEWER_BASE } from './config';
+import * as jose from 'jose';
 
-type ConfigForServer = Pick<ClientSHL, 'passcode' | 'exp'>;
+type ConfigForServer = Pick<SHLAdminParams, 'passcode' | 'exp'>;
 
-export interface ClientSHL {
+export interface SHLAdminParams {
   id: string;
   managementToken: string;
   encryptionKey: string;
   files: {
-    content: Uint8Array;
+    contentEncrypted: string;
     contentType: string;
     status: 'NEED_UPLOAD' | 'UPLOADING' | 'UPLOADED';
   }[];
@@ -18,14 +19,8 @@ export interface ClientSHL {
   v?: number;
 }
 
-interface ServerSHL {
-  id: string;
-  managementToken: string;
-  active: boolean;
-}
-
 export class SHLClient {
-  async toLink(shl: ClientSHL): Promise<string> {
+  async toLink(shl: SHLAdminParams): Promise<string> {
     const shlinkJsonPayload = {
       url: `${API_BASE}/shl/${shl.id}`,
       exp: shl.exp || undefined,
@@ -39,7 +34,7 @@ export class SHLClient {
     return shlinkBare;
   }
 
-  async create(config: ConfigForServer = {}): Promise<ClientSHL> {
+  async createShl(config: ConfigForServer = {}): Promise<SHLAdminParams> {
     const ek = randomStringWithEntropy();
     const create = await fetch(`${API_BASE}/shl`, {
       method: 'POST',
@@ -58,15 +53,25 @@ export class SHLClient {
     };
   }
 
-  async addFile(shl: ClientSHL, content: Uint8Array, contentType: string): Promise<ClientSHL> {
-    shl.files.push({ content, contentType, status: 'NEED_UPLOAD' });
+  async addFile(shl: SHLAdminParams, content: unknown, contentType: string): Promise<SHLAdminParams> {
+    let contentEncrypted = await new jose.CompactEncrypt(
+      new TextEncoder().encode(JSON.stringify(content))
+    )
+      .setProtectedHeader({
+        alg: 'dir',
+        enc: 'A256GCM'
+      })
+      .encrypt(jose.base64url.decode(shl.encryptionKey));
+
+    new TextEncoder().encode(contentEncrypted),
+      shl.files.push({ contentEncrypted, contentType, status: 'NEED_UPLOAD' });
     const add = await fetch(`${API_BASE}/shl/${shl.id}/file`, {
       method: 'POST',
       headers: {
         'content-type': contentType,
         authorization: `Bearer ${shl.managementToken}`
       },
-      body: content
+      body: contentEncrypted
     });
     return shl;
   }

@@ -1,0 +1,20 @@
+<div class="card">
+    <header class="card-header">
+        <a href="#" data-toggle="collapse" data-target="#immunizations-body" aria-expanded="true" class="">
+            <i class="icon-action fa fa-chevron-down"></i>
+        </a>
+        <span class="title">Immunizations</span>
+    </header>
+    <div class="card-body collapse show" id="immunizations-body">
+        <ul class="list-group">
+        {{each(options.immunizations)}}
+            <li class="list-group-item">
+                <span><b>{{@this.occurrenceDateTime}}</b></span><br/>
+                {{each(options.immunizations[@index].vaccineCode.coding)}}
+                <span class="badge badge-primary">{{@this.system}}</span> {{@this.display}} ({{@this.code}})<br>
+                {{/each}}
+            </li>
+        {{/each}}
+        </ul>
+    </div>
+</div>

@@ -1,35 +1,21 @@
 <script lang="ts">
-  import AddFile from '../AddFile.svelte';
   import { setContext } from 'svelte';
-  import * as jose from 'jose';
-  import type { ClientSHL } from '../managementClient';
+  import AddFile from '../AddFile.svelte';
+  import HealthLink from '../HealthLink.svelte';
+  import type { SHLAdminParams } from '../managementClient';
   import { SHLClient } from '../managementClient';
   import type { SHCRetrieveEvent } from '../types';
-  import HealthLink from '../HealthLink.svelte';
 
   let shlClient = new SHLClient();
-  let summaryUrl = '';
-  let shl: ClientSHL | undefined;
-
   setContext('shlClient', shlClient);
 
-  async function newShl(details: SHCRetrieveEvent) {
-    console.log('Creating at', summaryUrl);
-    let shlCreated = await shlClient.create();
-    let encrypted = await new jose.CompactEncrypt(
-      new TextEncoder().encode(JSON.stringify(details.shc))
-    )
-      .setProtectedHeader({
-        alg: 'dir',
-        enc: 'A256GCM'
-      })
-      .encrypt(jose.base64url.decode(shlCreated.encryptionKey));
+  let summaryUrl = '';
+  let shl: SHLAdminParams | undefined;
 
-    shlClient.addFile(
-      shlCreated,
-      new TextEncoder().encode(encrypted),
-      'application/smart-health-card'
-    );
+  async function newShlFromShc(details: SHCRetrieveEvent) {
+    console.log('Creating at', summaryUrl);
+    const shlCreated = await shlClient.createShl();
+    shlClient.addFile(shlCreated, details.shc, 'application/smart-health-card');
     return shlCreated;
   }
 </script>
@@ -47,18 +33,21 @@
   {:else}
     <AddFile
       on:shc-retrieved={async ({ detail }) => {
-        shl = await newShl(detail);
+        shl = await newShlFromShc(detail);
       }}
     />
   {/if}
   <footer>
     This demonstration shows how to create a <a
-      href="https://docs.smarthealthit.org/smart-health-links/user-stories">SMART Health Link</a
-    >
+      target="_blank"
+      rel="noreferrer"
+      href="https://docs.smarthealthit.org/smart-health-links/user-stories">SMART Health Link</a>
     for any FHIR
-    <a href="https://build.fhir.org/ig/HL7/fhir-ips/">International Patient Summary</a> document.
-    SHLinks can be shared by copy/paste, or by presenting a QR. Source at
-    <a href="https://github.com/jmandel/shlips">github.com/jmandel/shlips</a>.
+    <a href="https://build.fhir.org/ig/HL7/fhir-ips/" target="_blank" rel="noreferrer"
+      >International Patient Summary</a>
+    document. SHLinks can be shared by copy/paste, or by presenting a QR. Source at
+    <a href="https://github.com/jmandel/shlips" target="_blank" rel="noreferrer"
+      >github.com/jmandel/shlips</a>.
   </footer>
 </div>
 

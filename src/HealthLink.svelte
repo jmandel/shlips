@@ -2,8 +2,8 @@
   import { getContext } from 'svelte';
   import QRCode from 'qrcode';
 
-  import type { ClientSHL, SHLClient } from './managementClient';
-  export let shl: ClientSHL;
+  import type { SHLAdminParams, SHLClient } from './managementClient';
+  export let shl: SHLAdminParams;
   let shlClient: SHLClient = getContext('shlClient');
   let copyNotice = '';
 

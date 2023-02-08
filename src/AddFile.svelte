@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount} from 'svelte';
   import * as jose from 'jose';
   import * as pako from 'pako';
+  import { createEventDispatcher, onMount } from 'svelte';
+  import { EXAMPLE_IPS } from './config';
   import issuerKeys from './issuer.private.jwks.json';
   import type { SHCRetrieveEvent } from './types';
-    import { EXAMPLE_IPS } from './config';
 
   const dispatch = createEventDispatcher<{ 'shc-retrieved': SHCRetrieveEvent }>();
   let submitting = false;
@@ -12,8 +12,8 @@
   let inputUrl: HTMLInputElement;
 
   onMount(() => {
-    inputUrl.select()
-  })
+    inputUrl.select();
+  });
 
   let summaryUrlValidated: URL | undefined = undefined;
   $: {
