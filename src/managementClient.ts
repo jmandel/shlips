@@ -1,5 +1,5 @@
 import { randomStringWithEntropy, base64url } from './util';
-import { API_BASE } from './config';
+import { API_BASE, VIEWER_BASE } from './config';
 
 type ConfigForServer = Pick<ClientSHL, 'passcode' | 'exp'>;
 
@@ -29,13 +29,13 @@ export class SHLClient {
     const shlinkJsonPayload = {
       url: `${API_BASE}/shl/${shl.id}`,
       exp: shl.exp || undefined,
-      flag: shl.passcode ? 'P' : undefined,
+      flag: shl.passcode ? 'P' : '',
       key: shl.encryptionKey,
       label: shl.label
     };
 
     const encodedPayload: string = base64url.encode(JSON.stringify(shlinkJsonPayload));
-    const shlinkBare = `shlink:/` + encodedPayload;
+    const shlinkBare = VIEWER_BASE + `shlink:/` + encodedPayload;
     return shlinkBare;
   }
 
@@ -59,20 +59,15 @@ export class SHLClient {
   }
 
   async addFile(shl: ClientSHL, content: Uint8Array, contentType: string): Promise<ClientSHL> {
-    const contentEncrypted = ``;
     shl.files.push({ content, contentType, status: 'NEED_UPLOAD' });
     const add = await fetch(`${API_BASE}/shl/${shl.id}/file`, {
       method: 'POST',
       headers: {
-        'content-type': contentEncrypted,
+        'content-type': contentType,
         authorization: `Bearer ${shl.managementToken}`
       },
       body: content
     });
-    // sign SHC to pretend
-    // encrypt
-    // POST
-    // return
     return shl;
   }
 }

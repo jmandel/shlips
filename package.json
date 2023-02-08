@@ -13,6 +13,7 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^2.0.0",
+		"@sveltejs/adapter-static": "^2.0.0",
 		"@sveltejs/kit": "^1.5.0",
 		"prettier": "^2.8.0",
 		"prettier-plugin-svelte": "^2.8.1",
@@ -24,7 +25,11 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@types/pako": "^2.0.0",
+		"@types/qrcode": "^1.5.0",
 		"base64url": "^3.0.1",
-		"jose": "^4.11.4"
+		"jose": "^4.11.4",
+		"pako": "^2.1.0",
+		"qrcode": "^1.5.1"
 	}
 }
