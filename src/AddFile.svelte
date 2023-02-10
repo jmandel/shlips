@@ -79,6 +79,7 @@
 </script>
 
 <form on:submit|preventDefault={() => fetchIps(summaryUrlValidated)}>
+  Document Bundle <code>.json</code> file, or signed <code>.smart-health-card</code> file
   <input type="text" bind:value={summaryUrl} bind:this={inputUrl} />
   <button disabled={!summaryUrlValidated || submitting} type="submit">
     {#if !submitting}

@@ -13,14 +13,13 @@
   let summaryUrl = '';
 
   const LOCAL_STORAGE_KEY = 'shlips_store';
-  let loading = true;
   let shl: SHLAdminParams | undefined =
     browser && window.localStorage[LOCAL_STORAGE_KEY]
       ? JSON.parse(window.localStorage[LOCAL_STORAGE_KEY])
       : undefined;
 
   $: {
-    if (browser) window.localStorage[LOCAL_STORAGE_KEY] = JSON.stringify(shl);
+    if (browser && shl) window.localStorage[LOCAL_STORAGE_KEY] = JSON.stringify(shl);
   }
 
   async function newShlFromShc(details: SHCRetrieveEvent) {
