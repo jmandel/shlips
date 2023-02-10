@@ -2,6 +2,8 @@
   import * as jose from 'jose';
   import * as pako from 'pako';
   import { createEventDispatcher, onMount } from 'svelte';
+  import { Button, FormGroup, Input, Label } from 'sveltestrap';
+
   import { EXAMPLE_IPS } from './config';
   import issuerKeys from './issuer.private.jwks.json';
   import type { SHCRetrieveEvent } from './types';
@@ -9,10 +11,10 @@
   const dispatch = createEventDispatcher<{ 'shc-retrieved': SHCRetrieveEvent }>();
   let submitting = false;
   let summaryUrl = EXAMPLE_IPS;
-  let inputUrl: HTMLInputElement;
+  let inputUrl: HTMLFormElement;
 
   onMount(() => {
-    inputUrl.select();
+    inputUrl.getElementsByTagName('input').item(0)?.select();
   });
 
   let summaryUrlValidated: URL | undefined = undefined;
@@ -78,20 +80,19 @@
   }
 </script>
 
-<form on:submit|preventDefault={() => fetchIps(summaryUrlValidated)}>
-  Document Bundle <code>.json</code> file, or signed <code>.smart-health-card</code> file
-  <input type="text" bind:value={summaryUrl} bind:this={inputUrl} />
-  <button disabled={!summaryUrlValidated || submitting} type="submit">
+<form bind:this={inputUrl} on:submit|preventDefault={() => fetchIps(summaryUrlValidated)}>
+  <FormGroup>
+    <Label>Bundle <code>.json</code>, or signed <code>.smart-health-card</code></Label>
+    <Input width="100%" type="text" bind:value={summaryUrl} />
+  </FormGroup>
+  <Button color="primary" disabled={!summaryUrlValidated || submitting} type="submit">
     {#if !submitting}
       Fetch IPS
     {:else}
       Fetching...
     {/if}
-  </button>
+  </Button>
 </form>
 
 <style>
-  input {
-    width: 100%;
-  }
 </style>

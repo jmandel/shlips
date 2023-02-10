@@ -17,7 +17,7 @@
 		"@sveltejs/kit": "^1.5.0",
 		"prettier": "^2.8.0",
 		"prettier-plugin-svelte": "^2.8.1",
-		"svelte": "^3.54.0",
+		"svelte": "^3.55.1",
 		"svelte-check": "^3.0.1",
 		"tslib": "^2.4.1",
 		"typescript": "^4.9.3",
@@ -28,8 +28,10 @@
 		"@types/pako": "^2.0.0",
 		"@types/qrcode": "^1.5.0",
 		"base64url": "^3.0.1",
+		"bootstrap": "^5.2.3",
 		"jose": "^4.11.4",
 		"pako": "^2.1.0",
-		"qrcode": "^1.5.1"
+		"qrcode": "^1.5.1",
+		"sveltestrap": "^5.10.0"
 	}
 }

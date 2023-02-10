@@ -1,6 +1,8 @@
 <script lang="ts">
   import { getContext } from 'svelte';
   import QRCode from 'qrcode';
+  import { Button } from 'sveltestrap';
+
 
   import type { SHLAdminParams, SHLClient } from './managementClient';
   export let shl: SHLAdminParams;
@@ -49,13 +51,13 @@
       Passcode: {shl.passcode || '(None)'}
     </li>
     <li>
-      <button on:click={copyShl} disabled={!!copyNotice}>
+      <Button size="sm" color="primary" on:click={copyShl} disabled={!!copyNotice}>
         {#if copyNotice}
           {copyNotice}
         {:else}
           Copy SMART Health Link
         {/if}
-      </button>
+      </Button>
     </li>
     {#await href then href}
       <li>
