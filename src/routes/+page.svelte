@@ -10,8 +10,6 @@
   let shlClient = new SHLClient();
   setContext('shlClient', shlClient);
 
-  let summaryUrl = '';
-
   const LOCAL_STORAGE_KEY = 'shlips_store';
   let shl: SHLAdminParams | undefined =
     browser && window.localStorage[LOCAL_STORAGE_KEY]
@@ -23,7 +21,6 @@
   }
 
   async function newShlFromShc(details: SHCRetrieveEvent) {
-    console.log('Creating at', summaryUrl);
     const shlCreated = await shlClient.createShl();
     shlClient.addFile(shlCreated, details.shc, 'application/smart-health-card');
     return shlCreated;

@@ -53,17 +53,17 @@
         {#if copyNotice}
           {copyNotice}
         {:else}
-          Copy SHLink
+          Copy SMART Health Link
         {/if}
       </button>
     </li>
     {#await href then href}
       <li>
-        <a {href} target="_blank" rel="noreferrer">Open SHLink</a>
+        <a {href} target="_blank" rel="noreferrer">Open SMART Health Link</a>
       </li>
     {/await}
     {#await qrCode then dataUrl}
-      <li class="logo">
+      <li class="logo"> Present SMART Health Link
         <img class="qr" alt="QR Code for SHL" src={dataUrl} />
         <img class="logo" alt="SMART Logo" src={"./smart-logo.svg"} />
       </li>
@@ -73,19 +73,23 @@
 
 <style>
   img.qr {
+    position: absolute;
     vertical-align: top;
     height: 100%;
+    left: -1em;
+    top: 1em;
   }
   li.logo {
     position:relative;
-    height: 200px;
+    width: 250px;
+    height: 250px;
   }
   img.logo {
     position: absolute;
     background: white;
     width: 100px;
-    left: 50px;
-    top: 85px;
+    left: calc(50% - 1em - 50px);
+    top: calc(50% + .2em);
     border: 2px solid white;
     box-sizing: border-box;
   }
