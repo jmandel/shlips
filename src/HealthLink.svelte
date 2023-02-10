@@ -63,7 +63,7 @@
       </li>
     {/await}
     {#await qrCode then dataUrl}
-      <li class="logo"> Present SMART Health Link
+      <li class="logo"> <span class="show">Show SMART Health Link</span>
         <img class="qr" alt="QR Code for SHL" src={dataUrl} />
         <img class="logo" alt="SMART Logo" src={"./smart-logo.svg"} />
       </li>
@@ -77,20 +77,24 @@
     vertical-align: top;
     height: 100%;
     left: -1em;
-    top: 1em;
+    top: 1.5em;
   }
   li.logo {
     position:relative;
     width: 250px;
     height: 250px;
+    margin-bottom: 2em;
   }
   img.logo {
     position: absolute;
     background: white;
     width: 100px;
     left: calc(50% - 1em - 50px);
-    top: calc(50% + .2em);
+    top: calc(50% + .7em);
     border: 2px solid white;
     box-sizing: border-box;
+  }
+  span.show {
+    white-space: nowrap;
   }
 </style>
