@@ -27,22 +27,28 @@
     try {
       const contentResponse = await fetch(url!, { headers: { accept: 'application/fhir+json' } });
       const content: any = await contentResponse.json();
-      let shc = await signJws(content);
-      let patient = JSON.stringify(
+      if (content.verifiableCredential) {
+        return dispatch('shc-retrieved', {
+          shc: content,
+          patient: 'Patient from existing SHC',
+          content
+        });
+      }
+
+      const shc = await signJws(content);
+      const patient = JSON.stringify(
         content?.entry
           ?.map((e: any) => e.resource)
           ?.filter((r: any) => r.resourceType == 'Patient')?.[0]?.name?.[0] || 'unknown'
       );
 
-      const ret = {
+      dispatch('shc-retrieved', {
         shc: {
           verifiableCredential: [shc]
         },
         patient,
         content
-      };
-
-      dispatch('shc-retrieved', ret);
+      });
     } catch (e) {
       console.log('Failed', e);
       submitting = false;
