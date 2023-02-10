@@ -63,15 +63,30 @@
       </li>
     {/await}
     {#await qrCode then dataUrl}
-      <li>
-        <img alt="QR Code for SHL" src={dataUrl} />
+      <li class="logo">
+        <img class="qr" alt="QR Code for SHL" src={dataUrl} />
+        <img class="logo" alt="SMART Logo" src={"./smart-logo.svg"} />
       </li>
     {/await}
   </ul>
 </div>
 
 <style>
-  li > img {
+  img.qr {
     vertical-align: top;
+    height: 100%;
+  }
+  li.logo {
+    position:relative;
+    height: 200px;
+  }
+  img.logo {
+    position: absolute;
+    background: white;
+    width: 100px;
+    left: 50px;
+    top: 85px;
+    border: 2px solid white;
+    box-sizing: border-box;
   }
 </style>
