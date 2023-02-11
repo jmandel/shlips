@@ -8,33 +8,27 @@
   import type { SHCRetrieveEvent } from '../types';
 
   let shlClient: SHLClient = getContext('shlClient');
-
+  let shlStore: Writable<SHLAdminParams[]> = getContext('shlStore');
+  let selectedShl: Writable<number | undefined> = getContext('selectedShl');
   let reset: Writable<number> = getContext('reset');
 
-  const LOCAL_STORAGE_KEY = 'shlips_store';
-  let shl: SHLAdminParams | undefined =
-    browser && window.localStorage[LOCAL_STORAGE_KEY]
-      ? JSON.parse(window.localStorage[LOCAL_STORAGE_KEY])
-      : undefined;
-
-  $: if ($reset) shl = undefined;
-  $: {
-    if (browser && shl) window.localStorage[LOCAL_STORAGE_KEY] = JSON.stringify(shl);
-  }
+  $: if ($reset) $shlStore = [];
 
   async function newShlFromShc(details: SHCRetrieveEvent) {
     const shlCreated = await shlClient.createShl();
     shlClient.addFile(shlCreated, details.shc, 'application/smart-health-card');
+    shlCreated.label = details.label;
     return shlCreated;
   }
 </script>
 
-{#if shl}
-  <HealthLink {shl} />
+{#if $selectedShl !== undefined}
+  <HealthLink shl={$shlStore[$selectedShl]} />
 {:else if browser}
   <AddFile
     on:shc-retrieved={async ({ detail }) => {
-      shl = await newShlFromShc(detail);
+      $shlStore = [...$shlStore, await newShlFromShc(detail)];
+      $selectedShl = $shlStore.length - 1;
     }}
   />
 {:else}

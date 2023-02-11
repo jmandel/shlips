@@ -25,6 +25,9 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
+    - name: Patch per https://github.com/trasherdk/sveltestrap/issues/5
+      run: ./fix-popper.sh
+
     - name: Build SvelteKit
       run: npm run build
 

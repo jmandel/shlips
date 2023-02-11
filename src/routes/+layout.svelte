@@ -1,10 +1,34 @@
 <script lang="ts">
-  import 'bootstrap/dist/css/bootstrap.min.css';
-  import { Col, Container, Row } from 'sveltestrap';
-  import { Nav, Navbar, NavbarBrand, NavItem, NavLink } from 'sveltestrap';
+  import { Col, Container, Icon, Row, Styles } from 'sveltestrap';
+  import { browser } from '$app/environment';
   import { setContext } from 'svelte';
-  import { SHLClient } from '../managementClient';
   import { writable } from 'svelte/store';
+  import {
+    ButtonDropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownToggle,
+    Navbar,
+    NavbarBrand
+  } from 'sveltestrap';
+  import { SHLClient, type SHLAdminParams } from '../managementClient';
+
+  const LOCAL_STORAGE_KEY = 'shlips_store';
+  let shlStore = writable<SHLAdminParams[]>(
+    browser && window.localStorage[LOCAL_STORAGE_KEY]
+      ? JSON.parse(window.localStorage[LOCAL_STORAGE_KEY])
+      : []
+  );
+
+  let selectedShl = writable<number | undefined>($shlStore.length > 0 ? 0 : undefined);
+  setContext('selectedShl', selectedShl);
+
+  $: {
+    if (browser && $shlStore) window.localStorage[LOCAL_STORAGE_KEY] = JSON.stringify($shlStore);
+  }
+
+  setContext('shlStore', shlStore);
+
   let shlClient = new SHLClient();
   setContext('shlClient', shlClient);
 
@@ -13,19 +37,44 @@
 </script>
 
 <Container class="main" fluid>
+  <Styles />
   <Row>
     <Col>
       <Navbar>
         <NavbarBrand href="/">SMART Health Links for IPS</NavbarBrand>
-        <Nav class="ms-auto" navbar>
-          <NavItem>
-            <NavLink
+        <ButtonDropdown size="sm">
+          <DropdownToggle color="primary" caret>Actions...</DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem on:click={() => ($selectedShl = undefined)}>Add New SHLink</DropdownItem>
+            <DropdownItem on:click={() => $reset++}>Reset Demo</DropdownItem>
+            {#if $shlStore.length > 0}
+              <DropdownItem divider />
+              <DropdownItem header>Stored SHLinks</DropdownItem>
+              {#each $shlStore as shl, i}
+                <DropdownItem
+                  on:click={() => {
+                    if ($selectedShl !== undefined) {
+                      if (i < $selectedShl) {
+                        $selectedShl--;
+                      }
+                    }
+                    const newStore = [...$shlStore];
+                    newStore.splice(i, 1);
+                    $shlStore = newStore;
+                    if ($shlStore.length == 0) {
+                      $selectedShl = undefined;
+                    }
+                  }}><Icon name="trash" /> {shl.label || `SHLink ${i + 1}`}</DropdownItem
+                >
+              {/each}
+            {/if}
+          </DropdownMenu>
+        </ButtonDropdown>
+        <!-- <NavLink
               on:click={() => {
                 $reset++;
               }}>Reset SHL</NavLink
-            >
-          </NavItem>
-        </Nav>
+            > -->
       </Navbar>
     </Col>
   </Row>

@@ -12,6 +12,7 @@
   let submitting = false;
   let summaryUrl = EXAMPLE_IPS;
   let inputUrl: HTMLFormElement;
+  let label = "SHL from " + new Date().toISOString().slice(0, 10);
 
   onMount(() => {
     inputUrl.getElementsByTagName('input').item(0)?.select();
@@ -49,7 +50,8 @@
           verifiableCredential: [shc]
         },
         patient,
-        content
+        content,
+        label
       });
     } catch (e) {
       console.log('Failed', e);
@@ -84,6 +86,10 @@
   <FormGroup>
     <Label>Bundle <code>.json</code>, or signed <code>.smart-health-card</code></Label>
     <Input width="100%" type="text" bind:value={summaryUrl} />
+  </FormGroup>
+  <FormGroup>
+    <Label>Label</Label>
+    <Input width="100%" type="text" bind:value={label} />
   </FormGroup>
   <Button color="primary" disabled={!summaryUrlValidated || submitting} type="submit">
     {#if !submitting}
