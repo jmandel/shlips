@@ -1,12 +1,16 @@
 <script lang="ts">
-  import { getContext } from 'svelte';
   import QRCode from 'qrcode';
+  import { getContext } from 'svelte';
   import { Button } from 'sveltestrap';
 
-
+  import type { Writable } from 'svelte/store';
   import type { SHLAdminParams, SHLClient } from './managementClient';
+
   export let shl: SHLAdminParams;
+  let shlStore: Writable<SHLAdminParams[]> = getContext('shlStore');
+  let selectedShl: Writable<number | undefined> = getContext('selectedShl');
   let shlClient: SHLClient = getContext('shlClient');
+
   let copyNotice = '';
 
   let href: Promise<string>;
@@ -29,6 +33,17 @@
     setTimeout(() => {
       copyNotice = copyNoticePrev;
     }, 1000);
+  }
+
+  async function deleteShl() {
+    const newStore = [...$shlStore];
+    newStore.splice($selectedShl!, 1);
+    $shlStore = newStore;
+    if ($shlStore.length == 0) {
+      $selectedShl = undefined;
+    } else {
+      $selectedShl = $selectedShl! - 1;
+    }
   }
 </script>
 
@@ -55,7 +70,7 @@
         {#if copyNotice}
           {copyNotice}
         {:else}
-          Copy SMART Health Link
+          Copy SMART Health Link to Clipboard
         {/if}
       </Button>
     </li>
@@ -65,11 +80,15 @@
       </li>
     {/await}
     {#await qrCode then dataUrl}
-      <li class="logo"> <span class="show">Show SMART Health Link</span>
+      <li class="logo">
+        <span class="show">Present SMART Health Link as QR</span>
         <img class="qr" alt="QR Code for SHL" src={dataUrl} />
-        <img class="logo" alt="SMART Logo" src={"./smart-logo.svg"} />
+        <img class="logo" alt="SMART Logo" src={'./smart-logo.svg'} />
       </li>
     {/await}
+    <li>
+      <Button size="sm" on:click={deleteShl} color="danger">Delete SMART Health Link</Button>
+    </li>
   </ul>
 </div>
 
@@ -82,7 +101,7 @@
     top: 1.5em;
   }
   li.logo {
-    position:relative;
+    position: relative;
     width: 250px;
     height: 250px;
     margin-bottom: 2em;
@@ -92,7 +111,7 @@
     background: white;
     width: 100px;
     left: calc(50% - 1em - 50px);
-    top: calc(50% + .7em);
+    top: calc(50% + 0.7em);
     border: 2px solid white;
     box-sizing: border-box;
   }

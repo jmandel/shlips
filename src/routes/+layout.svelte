@@ -53,28 +53,15 @@
               {#each $shlStore as shl, i}
                 <DropdownItem
                   on:click={() => {
-                    if ($selectedShl !== undefined) {
-                      if (i < $selectedShl) {
-                        $selectedShl--;
-                      }
-                    }
-                    const newStore = [...$shlStore];
-                    newStore.splice(i, 1);
-                    $shlStore = newStore;
-                    if ($shlStore.length == 0) {
-                      $selectedShl = undefined;
-                    }
-                  }}><Icon name="trash" /> {shl.label || `SHLink ${i + 1}`}</DropdownItem
+                    $selectedShl = i;
+                  }}
+                  ><Icon name="eye" />
+                  {shl.label || `SHLink ${i + 1}`}</DropdownItem
                 >
               {/each}
             {/if}
           </DropdownMenu>
         </ButtonDropdown>
-        <!-- <NavLink
-              on:click={() => {
-                $reset++;
-              }}>Reset SHL</NavLink
-            > -->
       </Navbar>
     </Col>
   </Row>
