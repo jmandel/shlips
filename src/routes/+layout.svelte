@@ -13,7 +13,7 @@
   } from 'sveltestrap';
   import { SHLClient, type SHLAdminParams } from '../managementClient';
 
-  const LOCAL_STORAGE_KEY = 'shlips_store';
+  const LOCAL_STORAGE_KEY = 'shlips_store_shls';
   let shlStore = writable<SHLAdminParams[]>(
     browser && window.localStorage[LOCAL_STORAGE_KEY]
       ? JSON.parse(window.localStorage[LOCAL_STORAGE_KEY])
