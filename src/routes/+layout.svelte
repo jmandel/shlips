@@ -44,7 +44,7 @@
     <Col>
       <Navbar>
         <NavbarBrand href="/">SMART Health Links for IPS</NavbarBrand>
-        <ButtonDropdown size="sm">
+        <ButtonDropdown size="sm" direction="down">
           <DropdownToggle color="primary" caret>Actions...</DropdownToggle>
           <DropdownMenu>
             <DropdownItem href="/create">Add New SHLink</DropdownItem>
