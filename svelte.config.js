@@ -12,7 +12,7 @@ export default {
       // these options are set automatically — see below
       pages: 'build',
       assets: 'build',
-      fallback: null,
+      fallback: "404.html",
       precompress: false,
       strict: true,
       paths: {

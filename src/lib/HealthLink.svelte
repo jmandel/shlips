@@ -5,6 +5,7 @@
 
   import type { Writable } from 'svelte/store';
   import type { SHLAdminParams, SHLClient } from './managementClient';
+  import { assets } from '$internal/paths';
 
   export let shl: SHLAdminParams;
   let shlStore: Writable<SHLAdminParams[]> = getContext('shlStore');
@@ -83,7 +84,7 @@
       <li class="logo">
         <span class="show">Present SMART Health Link as QR</span>
         <img class="qr" alt="QR Code for SHL" src={dataUrl} />
-        <img class="logo" alt="SMART Logo" src={'./smart-logo.svg'} />
+        <img class="logo" alt="SMART Logo" src={assets + '/smart-logo.svg'} />
       </li>
     {/await}
     <li>

@@ -1,30 +1,32 @@
 <script lang="ts">
-  import { Col, Container, Icon, Row, Styles } from 'sveltestrap';
-  import { browser } from '$app/environment';
+  import { goto } from '$app/navigation';
   import { setContext } from 'svelte';
   import { writable } from 'svelte/store';
   import {
     ButtonDropdown,
+    Col,
+    Container,
     DropdownItem,
     DropdownMenu,
     DropdownToggle,
+    Icon,
     Navbar,
-    NavbarBrand
+    NavbarBrand,
+    Row,
+    Styles
   } from 'sveltestrap';
-  import { SHLClient, type SHLAdminParams } from '../managementClient';
+  import { SHLClient, type SHLAdminParams } from '$lib/managementClient';
 
   const LOCAL_STORAGE_KEY = 'shlips_store_shls';
   let shlStore = writable<SHLAdminParams[]>(
-    browser && window.localStorage[LOCAL_STORAGE_KEY]
-      ? JSON.parse(window.localStorage[LOCAL_STORAGE_KEY])
-      : []
+    window.localStorage[LOCAL_STORAGE_KEY] ? JSON.parse(window.localStorage[LOCAL_STORAGE_KEY]) : []
   );
 
   let selectedShl = writable<number | undefined>($shlStore.length > 0 ? 0 : undefined);
   setContext('selectedShl', selectedShl);
 
   $: {
-    if (browser && $shlStore) window.localStorage[LOCAL_STORAGE_KEY] = JSON.stringify($shlStore);
+    if ($shlStore) window.localStorage[LOCAL_STORAGE_KEY] = JSON.stringify($shlStore);
   }
 
   setContext('shlStore', shlStore);
@@ -45,16 +47,16 @@
         <ButtonDropdown size="sm">
           <DropdownToggle color="primary" caret>Actions...</DropdownToggle>
           <DropdownMenu>
-            <DropdownItem on:click={() => ($selectedShl = undefined)}>Add New SHLink</DropdownItem>
-            <DropdownItem on:click={() => $reset++}>Reset Demo</DropdownItem>
+            <DropdownItem href="/create">Add New SHLink</DropdownItem>
+            <DropdownItem
+              on:click={() => delete window.localStorage[LOCAL_STORAGE_KEY] && goto('/')}
+              >Reset Demo</DropdownItem
+            >
             {#if $shlStore.length > 0}
               <DropdownItem divider />
               <DropdownItem header>Stored SHLinks</DropdownItem>
               {#each $shlStore as shl, i}
-                <DropdownItem
-                  on:click={() => {
-                    $selectedShl = i;
-                  }}
+                <DropdownItem href={'/view/' + shl.id}
                   ><Icon name="eye" />
                   {shl.label || `SHLink ${i + 1}`}</DropdownItem
                 >
