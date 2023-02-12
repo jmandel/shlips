@@ -49,8 +49,10 @@
           <DropdownMenu>
             <DropdownItem href="/create">Add New SHLink</DropdownItem>
             <DropdownItem
-              on:click={() => delete window.localStorage[LOCAL_STORAGE_KEY] && goto('/')}
-              >Reset Demo</DropdownItem
+              on:click={() => {
+                delete window.localStorage[LOCAL_STORAGE_KEY];
+                goto('/');
+              }}>Reset Demo</DropdownItem
             >
             {#if $shlStore.length > 0}
               <DropdownItem divider />
