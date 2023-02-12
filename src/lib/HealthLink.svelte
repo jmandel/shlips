@@ -1,7 +1,7 @@
 <script lang="ts">
   import QRCode from 'qrcode';
   import { getContext } from 'svelte';
-  import { Button } from 'sveltestrap';
+  import { Button, Icon } from 'sveltestrap';
 
   import { goto } from '$app/navigation';
   import { assets } from '$internal/paths';
@@ -24,6 +24,8 @@
   $: {
     qrCode = href.then((r) => QRCode.toDataURL(r));
   }
+
+  let canShare = navigator.canShare({ url: 'https://example.com', title: 'Title' });
 
   async function copyShl() {
     let copyNoticePrev = copyNotice;
@@ -61,22 +63,36 @@
       Passcode: {shl.passcode || '(None)'}
     </li>
     <li>
-      <Button size="sm" color="primary" on:click={copyShl} disabled={!!copyNotice}>
+      <Button size="sm" color="success" on:click={copyShl} disabled={!!copyNotice}>
+        <Icon name="clipboard" />
         {#if copyNotice}
           {copyNotice}
         {:else}
-          Copy SMART Health Link to Clipboard
+          Copy
         {/if}
       </Button>
     </li>
+    {#if canShare}
+      <li>
+        <Button
+          size="sm"
+          color="success"
+          on:click={async () => {
+            navigator.share({ url: await href, title: shl.label });
+          }}><Icon name="share" /> Share</Button
+        >
+      </li>
+    {/if}
     {#await href then href}
       <li>
-        <a {href} target="_blank" rel="noreferrer">Open SMART Health Link</a>
+        <Button size="sm" color="success" {href} target="_blank">
+          <Icon name="window" /> Open in new tab
+        </Button>
       </li>
     {/await}
     {#await qrCode then dataUrl}
       <li class="logo">
-        <span class="show">Present SMART Health Link as QR</span>
+        <span class="show">Present QR</span>
         <img class="qr" alt="QR Code for SHL" src={dataUrl} />
         <img class="logo" alt="SMART Logo" src={assets + '/smart-logo.svg'} />
       </li>
@@ -112,5 +128,8 @@
   }
   span.show {
     white-space: nowrap;
+  }
+  li {
+    margin-bottom: 0.1em;
   }
 </style>
