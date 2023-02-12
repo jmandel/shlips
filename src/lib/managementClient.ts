@@ -53,7 +53,11 @@ export class SHLClient {
     };
   }
 
-  async addFile(shl: SHLAdminParams, content: unknown, contentType: string): Promise<SHLAdminParams> {
+  async addFile(
+    shl: SHLAdminParams,
+    content: unknown,
+    contentType: string
+  ): Promise<SHLAdminParams> {
     let contentEncrypted = await new jose.CompactEncrypt(
       new TextEncoder().encode(JSON.stringify(content))
     )

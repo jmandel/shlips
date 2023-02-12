@@ -12,7 +12,7 @@
   let submitting = false;
   let summaryUrl = EXAMPLE_IPS;
   let inputUrl: HTMLFormElement;
-  let label = "SHL from " + new Date().toISOString().slice(0, 10);
+  let label = 'SHL from ' + new Date().toISOString().slice(0, 10);
 
   onMount(() => {
     inputUrl.getElementsByTagName('input').item(0)?.select();

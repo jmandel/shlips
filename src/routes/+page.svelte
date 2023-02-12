@@ -7,8 +7,8 @@
   let shlClient: SHLClient = getContext('shlClient');
   let shlStore: Writable<SHLAdminParams[]> = getContext('shlStore');
   if ($shlStore.length) {
-    goto("/view/"+$shlStore[0].id)
+    goto('/view/' + $shlStore[0].id);
   } else {
-    goto("/create")
+    goto('/create');
   }
 </script>

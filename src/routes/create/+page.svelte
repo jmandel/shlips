@@ -4,7 +4,7 @@
   import type { Writable } from 'svelte/store';
   import type { SHLAdminParams, SHLClient } from '$lib/managementClient';
   import type { SHCRetrieveEvent } from '$lib/types';
-    import AddFile from '$lib/AddFile.svelte';
+  import AddFile from '$lib/AddFile.svelte';
 
   let shlClient: SHLClient = getContext('shlClient');
   let shlStore: Writable<SHLAdminParams[]> = getContext('shlStore');
