@@ -3,13 +3,13 @@
   import { getContext } from 'svelte';
   import { Button } from 'sveltestrap';
 
+  import { goto } from '$app/navigation';
+  import { assets } from '$internal/paths';
   import type { Writable } from 'svelte/store';
   import type { SHLAdminParams, SHLClient } from './managementClient';
-  import { assets } from '$internal/paths';
 
   export let shl: SHLAdminParams;
   let shlStore: Writable<SHLAdminParams[]> = getContext('shlStore');
-  let selectedShl: Writable<number | undefined> = getContext('selectedShl');
   let shlClient: SHLClient = getContext('shlClient');
 
   let copyNotice = '';
@@ -37,14 +37,8 @@
   }
 
   async function deleteShl() {
-    const newStore = [...$shlStore];
-    newStore.splice($selectedShl!, 1);
-    $shlStore = newStore;
-    if ($shlStore.length == 0) {
-      $selectedShl = undefined;
-    } else {
-      $selectedShl = $selectedShl! - 1;
-    }
+    $shlStore = $shlStore.filter((l) => l.id !== shl.id);
+    goto('/');
   }
 </script>
 

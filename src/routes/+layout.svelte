@@ -22,13 +22,9 @@
     window.localStorage[LOCAL_STORAGE_KEY] ? JSON.parse(window.localStorage[LOCAL_STORAGE_KEY]) : []
   );
 
-  let selectedShl = writable<number | undefined>($shlStore.length > 0 ? 0 : undefined);
-  setContext('selectedShl', selectedShl);
-
   $: {
     if ($shlStore) window.localStorage[LOCAL_STORAGE_KEY] = JSON.stringify($shlStore);
   }
-
   setContext('shlStore', shlStore);
 
   let shlClient = new SHLClient();
