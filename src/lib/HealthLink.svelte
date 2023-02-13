@@ -25,7 +25,7 @@
     qrCode = href.then((r) => QRCode.toDataURL(r, {errorCorrectionLevel: "M"}));
   }
 
-  let canShare = navigator.canShare({ url: 'https://example.com', title: 'Title' });
+  let canShare = navigator?.canShare?.({ url: 'https://example.com', title: 'Title' });
 
   async function copyShl() {
     let copyNoticePrev = copyNotice;
