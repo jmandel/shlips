@@ -22,7 +22,7 @@
   }
 
   $: {
-    qrCode = href.then((r) => QRCode.toDataURL(r, {errorCorrectionLevel: "M"}));
+    qrCode = href.then((r) => QRCode.toDataURL(r, { errorCorrectionLevel: 'M' }));
   }
 
   let canShare = navigator?.canShare?.({ url: 'https://example.com', title: 'Title' });
@@ -39,6 +39,7 @@
   }
 
   async function deleteShl() {
+    shlClient.deleteShl(shl);
     $shlStore = $shlStore.filter((l) => l.id !== shl.id);
     goto('/');
   }

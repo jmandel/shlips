@@ -53,6 +53,17 @@ export class SHLClient {
     };
   }
 
+  async deleteShl(shl: SHLAdminParams): Promise<boolean> {
+    const req = await fetch(`${API_BASE}/shl/${shl.id}`, {
+      method: 'DELETE',
+      headers: {
+        authorization: `Bearer ${shl.managementToken}`
+      }
+    });
+    const res = await req.json();
+    return true;
+  }
+
   async addFile(
     shl: SHLAdminParams,
     content: unknown,
