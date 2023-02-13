@@ -95,7 +95,7 @@
       <li class="logo">
         <span class="show">Present QR</span>
         <img class="qr" alt="QR Code for SHL" src={dataUrl} />
-        <img class="logo" alt="SMART Logo" src={assets + '/smart-logo.svg'} />
+        <img class="logo" alt="SMART Logo" src={'/smart-logo.svg'} />
       </li>
     {/await}
     <li>
