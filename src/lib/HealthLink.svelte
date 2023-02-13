@@ -22,7 +22,7 @@
   }
 
   $: {
-    qrCode = href.then((r) => QRCode.toDataURL(r));
+    qrCode = href.then((r) => QRCode.toDataURL(r, {errorCorrectionLevel: "M"}));
   }
 
   let canShare = navigator.canShare({ url: 'https://example.com', title: 'Title' });
