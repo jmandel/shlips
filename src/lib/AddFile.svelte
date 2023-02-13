@@ -14,15 +14,13 @@
   let inputUrl: HTMLFormElement;
   let label = 'SHL from ' + new Date().toISOString().slice(0, 10);
 
-  onMount(() => {
-    inputUrl.getElementsByTagName('input').item(0)?.select();
-  });
-
   let summaryUrlValidated: URL | undefined = undefined;
   $: {
     try {
       summaryUrlValidated = new URL(summaryUrl);
-    } catch {}
+    } catch {
+      summaryUrlValidated = undefined;
+    }
   }
 
   async function fetchIps(url?: URL) {
@@ -33,23 +31,16 @@
       if (content.verifiableCredential) {
         return dispatch('shc-retrieved', {
           shc: content,
-          patient: 'Patient from existing SHC',
           content
         });
       }
 
       const shc = await signJws(content);
-      const patient = JSON.stringify(
-        content?.entry
-          ?.map((e: any) => e.resource)
-          ?.filter((r: any) => r.resourceType == 'Patient')?.[0]?.name?.[0] || 'unknown'
-      );
 
       dispatch('shc-retrieved', {
         shc: {
           verifiableCredential: [shc]
         },
-        patient,
         content,
         label
       });

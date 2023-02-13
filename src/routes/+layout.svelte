@@ -65,7 +65,7 @@
       </Navbar>
     </Col>
   </Row>
-  <Row>
+  <Row class="main-row">
     <Col>
       <slot />
     </Col>
@@ -92,18 +92,20 @@
 </Container>
 
 <style>
+  :global(.main-row) {
+    flex-grow: 1;
+  }
   footer {
-    margin-top: 1em;
+    margin-bottom: 1em;
     font-style: italic;
-    position: absolute;
-    bottom: 1em;
   }
   :global(div.container-fluid.main) {
-    position: relative;
     min-height: 100%;
     margin-right: auto;
     margin-left: auto;
     max-width: 800px;
+    display: flex;
+    flex-direction: column;
   }
   :global(html, body) {
     height: 100%;
