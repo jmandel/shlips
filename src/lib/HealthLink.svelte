@@ -113,7 +113,7 @@
   </CardFooter>
 </Card>
 <h5>Configuration</h5>
-<FormGroup class="label">
+<FormGroup class="label shlbutton">
   <Label for="label">Label for SMART Health Link</Label>
   <Input
     name="label"
@@ -133,7 +133,7 @@
     }}><Icon name="sticky" /> Update Label</Button
   >
 </FormGroup>
-<FormGroup class="passcode">
+<FormGroup class="passcode shlbutton">
   <Label for="passcode">Protect with Passcode (optional)</Label>
   <Input
     maxlength={40}
@@ -154,7 +154,9 @@
     }}><Icon name="lock" /> Update Passcode</Button
   >
 </FormGroup>
-<Button size="sm" on:click={deleteShl} color="danger">Delete SMART Health Link</Button>
+<FormGroup class="shlbutton">
+  <Button size="sm" on:click={deleteShl} color="danger">Delete SMART Health Link</Button>
+</FormGroup>
 
 <style>
   img.qr {
@@ -174,17 +176,10 @@
     border: 2px solid white;
     box-sizing: border-box;
   }
-  :global(.passcode) {
+  :global(.shlbutton) {
     width: 300px !important;
   }
-  :global(.passcode input, .passcode button) {
-    width: 100%;
-    display: inline-block;
-  }
-  :global(.label) {
-    width: 300px !important;
-  }
-  :global(.label input, .label button) {
+  :global(.shlbutton input, .shlbutton button) {
     width: 100%;
     display: inline-block;
   }
