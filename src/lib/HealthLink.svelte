@@ -1,14 +1,33 @@
 <script lang="ts">
   import QRCode from 'qrcode';
   import { getContext } from 'svelte';
-  import { Button, Icon } from 'sveltestrap';
+  import {
+    Button,
+    Card,
+    CardBody,
+    CardFooter,
+    CardHeader,
+    CardSubtitle,
+    CardText,
+    CardTitle,
+    FormGroup,
+    Icon,
+    Input,
+    Label
+  } from 'sveltestrap';
 
   import { goto } from '$app/navigation';
-  import { assets } from '$internal/paths';
   import type { Writable } from 'svelte/store';
   import type { SHLAdminParams, SHLClient } from './managementClient';
 
   export let shl: SHLAdminParams;
+  let shlControlled: SHLAdminParams;
+
+  function syncProps(shl: SHLAdminParams) {
+    shlControlled = JSON.parse(JSON.stringify(shl));
+  }
+  $: syncProps(shl);
+
   let shlStore: Writable<SHLAdminParams[]> = getContext('shlStore');
   let shlClient: SHLClient = getContext('shlClient');
 
@@ -45,92 +64,135 @@
   }
 </script>
 
-<div>
-  <ul>
-    <li>
-      Label: {shl.label || '(None)'}
-    </li>
-
-    <li>
-      Expires:
-      {#if shl.exp}
-        {new Date(shl.exp * 1000).toISOString().slice(10)}
-      {:else}
-        (Never)
-      {/if}
-    </li>
-
-    <li>
-      Passcode: {shl.passcode || '(None)'}
-    </li>
-    <li>
-      <Button size="sm" color="success" on:click={copyShl} disabled={!!copyNotice}>
-        <Icon name="clipboard" />
-        {#if copyNotice}
-          {copyNotice}
-        {:else}
-          Copy
-        {/if}
-      </Button>
-    </li>
-    {#if canShare}
-      <li>
-        <Button
-          size="sm"
-          color="success"
-          on:click={async () => {
-            navigator.share({ url: await href, title: shl.label });
-          }}><Icon name="share" /> Share</Button
-        >
-      </li>
+<Card class="mb-3" color="light">
+  <CardHeader>
+    <CardTitle>
+      <Icon name={shl.passcode ? 'lock' : 'unlock'} />
+      {shl.label}</CardTitle
+    >
+  </CardHeader>
+  <CardBody>
+    {#if shl.exp}
+      <CardSubtitle color="success"
+        >Expires: {new Date(shl.exp * 1000).toISOString().slice(10)}
+      </CardSubtitle>
     {/if}
+
+    <CardText>
+      {#await qrCode then dataUrl}
+        <p class="logo">
+          <img class="qr" alt="QR Code for SHL" src={dataUrl} />
+          <img class="logo" alt="SMART Logo" src={'/smart-logo.svg'} />
+        </p>
+      {/await}
+    </CardText>
+  </CardBody>
+  <CardFooter>
+    {#if canShare}
+      <Button
+        size="sm"
+        color="success"
+        on:click={async () => {
+          navigator.share({ url: await href, title: shl.label });
+        }}><Icon name="share" /> Share</Button
+      >
+    {/if}
+    <Button size="sm" color="success" on:click={copyShl} disabled={!!copyNotice}>
+      <Icon name="clipboard" />
+      {#if copyNotice}
+        {copyNotice}
+      {:else}
+        Copy
+      {/if}
+    </Button>
     {#await href then href}
-      <li>
-        <Button size="sm" color="success" {href} target="_blank">
-          <Icon name="window" /> Open in new tab
-        </Button>
-      </li>
+      <Button size="sm" color="success" {href} target="_blank">
+        <Icon name="window" /> Open
+      </Button>
     {/await}
-    {#await qrCode then dataUrl}
-      <li class="logo">
-        <span class="show">Present QR</span>
-        <img class="qr" alt="QR Code for SHL" src={dataUrl} />
-        <img class="logo" alt="SMART Logo" src={'/smart-logo.svg'} />
-      </li>
-    {/await}
-    <li>
-      <Button size="sm" on:click={deleteShl} color="danger">Delete SMART Health Link</Button>
-    </li>
-  </ul>
-</div>
+  </CardFooter>
+</Card>
+<h5>Configuration</h5>
+<FormGroup class="label">
+  <Label for="label">Label for SMART Health Link</Label>
+  <Input
+    name="label"
+    maxlength={40}
+    type="text"
+    bind:value={shlControlled.label}
+    placeholder="label"
+  />
+  <Button
+    size="sm"
+    color="secondary"
+    disabled={(shl.label || '') === (shlControlled.label || '')}
+    on:click={async () => {
+      $shlStore = $shlStore.map((e) =>
+        e.id === shl.id ? { ...shl, label: shlControlled.label } : e
+      );
+    }}><Icon name="sticky" /> Update Label</Button
+  >
+</FormGroup>
+<FormGroup class="passcode">
+  <Label for="passcode">Protect with Passcode (optional)</Label>
+  <Input
+    maxlength={40}
+    name="passcode"
+    type="text"
+    bind:value={shlControlled.passcode}
+    placeholder="Assign Passcode"
+  />
+  <Button
+    size="sm"
+    color="secondary"
+    disabled={(shl.passcode || '') === (shlControlled.passcode || '')}
+    on:click={async () => {
+      await shlClient.resetShl({ ...shl, passcode: shlControlled.passcode });
+      $shlStore = $shlStore.map((e) =>
+        e.id === shl.id ? { ...shl, passcode: shlControlled.passcode } : e
+      );
+    }}><Icon name="lock" /> Update Passcode</Button
+  >
+</FormGroup>
+<Button size="sm" on:click={deleteShl} color="danger">Delete SMART Health Link</Button>
 
 <style>
   img.qr {
-    position: absolute;
-    vertical-align: top;
     height: 100%;
-    left: -1em;
-    top: 1.5em;
   }
-  li.logo {
+  p.logo {
     position: relative;
     width: 250px;
     height: 250px;
-    margin-bottom: 2em;
   }
   img.logo {
     position: absolute;
     background: white;
     width: 100px;
-    left: calc(50% - 1em - 50px);
-    top: calc(50% + 0.7em);
+    left: calc(50% - 50px);
+    top: calc(50% - 1em);
     border: 2px solid white;
     box-sizing: border-box;
   }
-  span.show {
-    white-space: nowrap;
+  :global(.passcode) {
+    width: 300px !important;
   }
-  li {
-    margin-bottom: 0.1em;
+  :global(.passcode input, .passcode button) {
+    width: 100%;
+    display: inline-block;
+  }
+  :global(.label) {
+    width: 300px !important;
+  }
+  :global(.label input, .label button) {
+    width: 100%;
+    display: inline-block;
+  }
+  :global(div.card) {
+    max-width: 300px;
+  }
+  :global(.card-title) {
+    font-size: 1em;
+    font-weight: bold;
   }
 </style>

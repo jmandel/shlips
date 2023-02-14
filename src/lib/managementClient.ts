@@ -11,7 +11,6 @@ export interface SHLAdminParams {
   files: {
     contentEncrypted: string;
     contentType: string;
-    status: 'NEED_UPLOAD' | 'UPLOADING' | 'UPLOADED';
   }[];
   passcode?: string;
   exp?: number;
@@ -64,6 +63,18 @@ export class SHLClient {
     return true;
   }
 
+  async resetShl(shl: SHLAdminParams): Promise<boolean> {
+    const req = await fetch(`${API_BASE}/shl/${shl.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ passcode: shl.passcode, exp: shl.exp }),
+      headers: {
+        authorization: `Bearer ${shl.managementToken}`
+      }
+    });
+    const res = await req.json();
+    return true;
+  }
+
   async addFile(
     shl: SHLAdminParams,
     content: unknown,
@@ -78,8 +89,7 @@ export class SHLClient {
       })
       .encrypt(jose.base64url.decode(shl.encryptionKey));
 
-    new TextEncoder().encode(contentEncrypted),
-      shl.files.push({ contentEncrypted, contentType, status: 'NEED_UPLOAD' });
+    new TextEncoder().encode(contentEncrypted), shl.files.push({ contentEncrypted, contentType });
     const add = await fetch(`${API_BASE}/shl/${shl.id}/file`, {
       method: 'POST',
       headers: {
