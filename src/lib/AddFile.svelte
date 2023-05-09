@@ -103,9 +103,9 @@
   </FormGroup>
   <FormGroup>
     <Label>Expires</Label>
-    <Input type="radio" bind:group={expiration} value={60 * 5} label="5 minutes" />
     <Input type="radio" bind:group={expiration} value={60 * 60} label="1 hour" />
-    <Input type="radio" bind:group={expiration} value={60 * 60 * 24 * 7} label="1 year" />
+    <Input type="radio" bind:group={expiration} value={60 * 60 * 24 * 7} label="1 week" />
+    <Input type="radio" bind:group={expiration} value={60 * 60 * 24 * 7 * 365} label="1 year" />
     <Input type="radio" bind:group={expiration} value={null} label="Never" />
   </FormGroup>
 
