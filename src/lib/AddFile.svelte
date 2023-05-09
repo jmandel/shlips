@@ -11,8 +11,12 @@
   const dispatch = createEventDispatcher<{ 'shc-retrieved': SHCRetrieveEvent }>();
   let submitting = false;
   let summaryUrl = EXAMPLE_IPS;
+  let uploadFiles: FileList | undefined;
+
   let inputUrl: HTMLFormElement;
   let label = 'SHL from ' + new Date().toISOString().slice(0, 10);
+
+  let expiration: number | null;
 
   let summaryUrlValidated: URL | undefined = undefined;
   $: {
@@ -23,11 +27,20 @@
     }
   }
 
-  async function fetchIps(url?: URL) {
+  async function fetchIps() {
     submitting = true;
     try {
-      const contentResponse = await fetch(url!, { headers: { accept: 'application/fhir+json' } });
-      const content: any = await contentResponse.json();
+      let content;
+
+      if (uploadFiles?.[0] instanceof File) {
+        content = JSON.parse(new TextDecoder().decode(await uploadFiles[0].arrayBuffer()));
+      } else {
+        const contentResponse = await fetch(summaryUrlValidated!, {
+          headers: { accept: 'application/fhir+json' }
+        });
+        content = await contentResponse.json();
+      }
+
       if (content.verifiableCredential) {
         return dispatch('shc-retrieved', {
           shc: content,
@@ -42,7 +55,8 @@
           verifiableCredential: [shc]
         },
         content,
-        label
+        label,
+        exp: expiration ? new Date().getTime() / 1000 + expiration : undefined
       });
     } catch (e) {
       console.log('Failed', e);
@@ -66,6 +80,7 @@
         }
       })
     );
+
     const signed = new jose.CompactSign(body)
       .setProtectedHeader(fields)
       .sign(await exampleSigningKey);
@@ -73,18 +88,30 @@
   }
 </script>
 
-<form bind:this={inputUrl} on:submit|preventDefault={() => fetchIps(summaryUrlValidated)}>
+<form bind:this={inputUrl} on:submit|preventDefault={() => fetchIps()}>
   <FormGroup>
-    <Label>Bundle <code>.json</code>, or signed <code>.smart-health-card</code></Label>
+    <Label>Upload Bundle <code>.json</code>, or signed <code>.smart-health-card</code></Label>
+    <Input width="100%" type="file" name="file" bind:files={uploadFiles} />
+  </FormGroup>
+  <FormGroup>
+    <Label>Or fetch from URL</Label>
     <Input width="100%" type="text" bind:value={summaryUrl} />
   </FormGroup>
   <FormGroup>
     <Label>Label</Label>
     <Input width="100%" type="text" bind:value={label} />
   </FormGroup>
+  <FormGroup>
+    <Label>Expires</Label>
+    <Input type="radio" bind:group={expiration} value={60 * 5} label="5 minutes" />
+    <Input type="radio" bind:group={expiration} value={60 * 60} label="1 hour" />
+    <Input type="radio" bind:group={expiration} value={60 * 60 * 24 * 7} label="1 year" />
+    <Input type="radio" bind:group={expiration} value={null} label="Never" />
+  </FormGroup>
+
   <Button color="primary" disabled={!summaryUrlValidated || submitting} type="submit">
     {#if !submitting}
-      Fetch IPS
+      Create SHLink
     {:else}
       Fetching...
     {/if}

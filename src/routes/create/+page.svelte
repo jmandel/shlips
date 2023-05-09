@@ -10,7 +10,7 @@
   let shlStore: Writable<SHLAdminParams[]> = getContext('shlStore');
 
   async function newShlFromShc(details: SHCRetrieveEvent): Promise<SHLAdminParams> {
-    const shlCreated = await shlClient.createShl();
+    const shlCreated = await shlClient.createShl({exp: details.exp});
     shlClient.addFile(shlCreated, details.shc, 'application/smart-health-card');
     shlCreated.label = details.label;
     return shlCreated;
