@@ -7,4 +7,4 @@ export const VIEWER_BASE = new URL(
   window.location.href
 ).toString();
 export const EXAMPLE_IPS =
-  'https://ips.health/fhir/Patient/98549f1a-e0d5-4454-849c-f5b97d3ed299/$summary';
+  'https://hl7-ips-server.hl7.org/fhir/Patient/98549f1a-e0d5-4454-849c-f5b97d3ed299/$summary';
